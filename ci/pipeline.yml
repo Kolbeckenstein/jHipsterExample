@@ -29,6 +29,8 @@ jobs:
 - name: run-app
   plan:
   - get: example-app
+    passed:
+      - junit-tests
     trigger: true
   - task: run-app
     config:  
