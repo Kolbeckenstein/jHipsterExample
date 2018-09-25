@@ -1,3 +1,4 @@
 #!/bin/sh
 
-./mvnw test
+#./mvnw test
+echo "hello"

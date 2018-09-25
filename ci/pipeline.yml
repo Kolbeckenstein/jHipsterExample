@@ -23,4 +23,6 @@ jobs:
       inputs:
       - name: example-app
       run:
-        path: concourseTutorial/test.sh
+        path: example-app/ci/test.sh
+        #path: ls
+        #args: [example-app/ci]
