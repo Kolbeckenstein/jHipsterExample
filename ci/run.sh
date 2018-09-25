@@ -2,4 +2,4 @@
 
 echo "---Running Tests---"
 
-./mvnw test
+./mvnw

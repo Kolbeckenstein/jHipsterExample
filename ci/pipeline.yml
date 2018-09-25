@@ -18,7 +18,7 @@ jobs:
       image_resource:
         type: docker-image
         source:
-          repository: openjdk
+          repository: ubuntu
           tag: latest
       inputs:
       - name: example-app
@@ -26,3 +26,19 @@ jobs:
         path: example-app/ci/test.sh
         #path: ls
         #args: [example-app/ci]
+- name: run-app
+  plan:
+  - get: example-app
+    trigger: true
+  - task: run-app
+    config:  
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: ubuntu
+          tag: latest
+      inputs:
+      - name: example-app
+      run:
+        path: example-app/ci/run.sh
