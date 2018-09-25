@@ -1,0 +1,15 @@
+#Concourse container local deployment
+wget https://raw.githubusercontent.com/starkandwayne/concourse-tutorial/master/docker-compose.yml
+docker-compose up -d
+docker-compose down
+
+#Get targets
+fly targets
+
+#Save the url localhost:8080 with admin login credentials as a target under the name 'tutorial'
+fly --target tutorial login --concourse-url http://127.0.0.1:8080 -u admin -p admin
+fly --target tutorial sync
+
+#
+fly -t tutorial set-pipeline -p exampleApp -c pipeline.yml
+fly -t tutorial unpause-pipeline -p exampleApp

@@ -1,0 +1,26 @@
+groups: []
+
+resources:
+- name: example-app
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/Kolbeckenstein/jHipsterExample.git
+
+jobs:
+- name: junit-tests
+  plan:
+  - get: example-app
+    trigger: true
+  - task: run-junit-tests
+    config:  
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: openjdk
+          tag: latest
+      inputs:
+      - name: example-app
+      run:
+        path: concourseTutorial/test.sh
