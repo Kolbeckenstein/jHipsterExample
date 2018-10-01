@@ -23,7 +23,7 @@ jobs:
       inputs:
       - name: example-app
       run:
-        path: example-app/ci/test.sh
+        path: ls && example-app/ci/test.sh
         #path: ls
         #args: [example-app/ci]
 - name: run-app
