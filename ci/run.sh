@@ -4,4 +4,5 @@ echo "---Running Tests---"
 
 cd example-app
 mvn -version
-./mvnw
+#./mvnw
+mvn clean install
