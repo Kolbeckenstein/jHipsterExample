@@ -91,7 +91,7 @@
         <sonar.surefire.reportsPath>${project.testresult.directory}/surefire-reports</sonar.surefire.reportsPath>
         <sonar.tests>${project.basedir}/src/test/</sonar.tests>
 
-        <sonar.host.url>http://10.12.108.57:9000</sonar.host.url>
+        <sonar.host.url>http://localhost:9000</sonar.host.url>
 
         <!-- jhipster-needle-maven-property -->
     </properties>
