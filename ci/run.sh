@@ -7,5 +7,7 @@ mvn -version
 #./mvnw
 mvn clean install
 
-ls -l ./assets/*
-ls -l /opt/resource
+mvn sonar:sonar
+
+#ls -l ./assets/*
+#ls -l /opt/resource
