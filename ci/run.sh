@@ -7,4 +7,5 @@ mvn -version
 #./mvnw
 mvn clean install
 
-ls -l /opt/resource/out
+ls -l ./assets/*
+ls -l /opt/resource
