@@ -609,6 +609,10 @@
                     <contextDirectory>${project.build.directory}</contextDirectory>
                 </configuration>
             </plugin>
+            <plugin>
+              <groupId>org.pitest</groupId>
+              <artifactId>pitest-maven</artifactId>              
+            </plugin>
             <!-- jhipster-needle-maven-add-plugin -->
         </plugins>
         <pluginManagement>
