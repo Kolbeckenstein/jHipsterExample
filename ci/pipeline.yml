@@ -118,7 +118,7 @@ jobs:
 - name: unit-test
   plan: 
   - get: newproject
-    # trigger: true
+    trigger: true
   - task: unit-test
     config:
       platform: linux
@@ -130,3 +130,18 @@ jobs:
       run: 
         path: ci/run.sh
         dir: newproject
+- name: post-test-task
+  plan:
+  - get: newproject
+    passed: [unit-test]
+    trigger: true
+  - task: run-task
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source: {repository: maven, tag: 3.5.4-jdk-8} 
+      run:
+          path: echo
+          args:
+          - hello world    
