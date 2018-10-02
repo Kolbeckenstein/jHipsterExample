@@ -5,9 +5,9 @@ echo "---Running Tests---"
 cd example-app
 mvn -version
 #./mvnw
-mvn clean install
+#mvn clean install
 
-mvn sonar:sonar
+mvn dependency-check:check
 
 #ls -l ./assets/*
 #ls -l /opt/resource

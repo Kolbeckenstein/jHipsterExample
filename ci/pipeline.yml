@@ -1,132 +1,132 @@
-resource_types:
+# resource_types:
 
-- name: sonar-runner
-  type: docker-image
-  source:
-    repository: cathive/concourse-sonarqube-resource
-    tag: latest # For reproducible builds use a specific tag and don't rely on "latest".
-
-resources:
-
-- name: example-app
-  type: git
-  source:
-    uri: https://github.com/Kolbeckenstein/jHipsterExample.git
-
-- name: artifact
-  type: s3
-  # ... configuration ommited
-
-- name: code-analysis
-  type: sonar-runner
-  source:
-    host_url: http://10.12.108.57:9000
-    login: 
-    project_key: 
-
-jobs:
-
-# The build job performs fetches stuff from the "sources" resource
-# and executes a task that builds and tests everyhing. Once compilation,
-# test execution and <whatever> has been performed, we copy the whole
-# working directory into the output folder "sonarqube-analysis-input"
-# and push the package that has been created by the "build" task to the
-# artifact resource and utilize the sonarqube-resource to perform static
-# code analysis.
-- name: build-and-analyze
-  plan:
-  - get: example-app
-    trigger: true
-  - task: build
-    config:
-      platform: linux
-      image_resource:
-        type: docker-image
-        #source:
-          #repository: debian
-        #source: {repository: debian}
-        source: {repository: maven, tag: 3.5.4-jdk-8}
-               
-          #tag: 'jessie'
-      inputs:
-      - name: example-app
-      outputs:
-      # Hint: The sonar-runner needs more than just the
-      # sources to perform a full analysis. Line coverage reports, unit test reports,
-      # Java class files and mutation test results should also be present.
-      # Therefore, you'll have to make sure that your build script provides the sources
-      # and the compilation/test results in your Concourse CI build plan.
-      # (And that is the reason, why we need the following output)
-      - name: sonarqube-analysis-input
-      run:
-        #path: ./mvnw
-        path: example-app/ci/run.sh
-        #dir: example-app
-  - aggregate:
-    - put: code-analysis
-      params:
-        project_path: example-app
-        #additional_properties:
-          # Will be passed as "-Dsonar.javascript.lcov.reportPaths="coverage/lcov.info" to the scanner.
-          #sonar.javascript.lcov.reportPaths: coverage/lcov.info
-          #sonar.projectKey = example-app/sonar-project.properties
-          #sonar.projectKey=test-app          
-
-    - put: artifact
-
-# The qualitygate task breaks the build if the analysis result from SonarQube
-# indicates that any of our quality metrics have not been met.
-- name: qualitygate
-  plan:
-  - aggregate:
-    - get: artifact
-      passed:
-      - build-and-analyze
-    - get: code-analysis
-      passed:
-      - build-and-analyze
-      trigger: true
-  - task: check-sonarqube-quality-gate
-    config:
-      platform: linux
-      image_resource:
-        type: docker-image
-        source:
-          repository: cathive/concourse-sonarqube-qualitygate-task
-          tag: latest # Use one of the versioned tags for reproducible builds!
-      inputs:
-      - name: code-analysis
-      run:
-        path: /sonarqube-qualitygate-check
-        dir: code-analysis
-
-# We deploy only artifacts that have made it through our quality gate!
-- name: deploy
-  plan:
-  - get: artifact
-    passed:
-    - qualitygate
-
-
+# - name: sonar-runner
+#   type: docker-image
+#   source:
+#     repository: cathive/concourse-sonarqube-resource
+#     tag: latest # For reproducible builds use a specific tag and don't rely on "latest".
 
 # resources:
-# - name: newproject
+
+# - name: example-app
 #   type: git
 #   source:
 #     uri: https://github.com/Kolbeckenstein/jHipsterExample.git
-#     branch: master
+
+# - name: artifact
+#   type: s3
+#   # ... configuration ommited
+
+# - name: code-analysis
+#   type: sonar-runner
+#   source:
+#     host_url: http://10.12.108.57:9000
+#     login: 
+#     project_key: 
+
 # jobs:
-# - name: unit-test
-#   plan: 
-#   - get: newproject
-#     # trigger: true
-#   - task: unit-test
+
+# # The build job performs fetches stuff from the "sources" resource
+# # and executes a task that builds and tests everyhing. Once compilation,
+# # test execution and <whatever> has been performed, we copy the whole
+# # working directory into the output folder "sonarqube-analysis-input"
+# # and push the package that has been created by the "build" task to the
+# # artifact resource and utilize the sonarqube-resource to perform static
+# # code analysis.
+# - name: build-and-analyze
+#   plan:
+#   - get: example-app
+#     trigger: true
+#   - task: build
 #     config:
 #       platform: linux
 #       image_resource:
 #         type: docker-image
-#         source: {repository: cathive/concourse-sonarqube-resource}
+#         #source:
+#           #repository: debian
+#         #source: {repository: debian}
+#         source: {repository: maven, tag: 3.5.4-jdk-8}
+               
+#           #tag: 'jessie'
 #       inputs:
-#       - name: newproject
-#       run: 
-#         path: newproject/ci/run.sh
+#       - name: example-app
+#       outputs:
+#       # Hint: The sonar-runner needs more than just the
+#       # sources to perform a full analysis. Line coverage reports, unit test reports,
+#       # Java class files and mutation test results should also be present.
+#       # Therefore, you'll have to make sure that your build script provides the sources
+#       # and the compilation/test results in your Concourse CI build plan.
+#       # (And that is the reason, why we need the following output)
+#       - name: sonarqube-analysis-input
+#       run:
+#         #path: ./mvnw
+#         path: example-app/ci/run.sh
+#         #dir: example-app
+#   - aggregate:
+#     - put: code-analysis
+#       params:
+#         project_path: example-app
+#         #additional_properties:
+#           # Will be passed as "-Dsonar.javascript.lcov.reportPaths="coverage/lcov.info" to the scanner.
+#           #sonar.javascript.lcov.reportPaths: coverage/lcov.info
+#           #sonar.projectKey = example-app/sonar-project.properties
+#           #sonar.projectKey=test-app          
+
+#     - put: artifact
+
+# # The qualitygate task breaks the build if the analysis result from SonarQube
+# # indicates that any of our quality metrics have not been met.
+# - name: qualitygate
+#   plan:
+#   - aggregate:
+#     - get: artifact
+#       passed:
+#       - build-and-analyze
+#     - get: code-analysis
+#       passed:
+#       - build-and-analyze
+#       trigger: true
+#   - task: check-sonarqube-quality-gate
+#     config:
+#       platform: linux
+#       image_resource:
+#         type: docker-image
+#         source:
+#           repository: cathive/concourse-sonarqube-qualitygate-task
+#           tag: latest # Use one of the versioned tags for reproducible builds!
+#       inputs:
+#       - name: code-analysis
+#       run:
+#         path: /sonarqube-qualitygate-check
+#         dir: code-analysis
+
+# # We deploy only artifacts that have made it through our quality gate!
+# - name: deploy
+#   plan:
+#   - get: artifact
+#     passed:
+#     - qualitygate
+
+
+
+resources:
+- name: newproject
+  type: git
+  source:
+    uri: https://github.com/Kolbeckenstein/jHipsterExample.git
+    branch: master
+jobs:
+- name: unit-test
+  plan: 
+  - get: newproject
+    # trigger: true
+  - task: unit-test
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source: {repository: maven}
+      inputs:
+      - name: newproject
+      run: 
+        path: newproject/ci/run.sh
