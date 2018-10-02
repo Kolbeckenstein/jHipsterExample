@@ -114,7 +114,6 @@ resources:
   type: git
   source:
     uri: https://github.com/Kolbeckenstein/jHipsterExample.git
-    branch: master
 jobs:
 - name: unit-test
   plan: 
@@ -125,8 +124,9 @@ jobs:
       platform: linux
       image_resource:
         type: docker-image
-        source: {repository: maven}
+        source: {repository: maven, tag: 3.5.4-jdk-8}
       inputs:
       - name: newproject
       run: 
-        path: newproject/ci/run.sh
+        path: ci/run.sh
+        dir: newproject
